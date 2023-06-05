@@ -2,11 +2,11 @@
 using System.Text.Json;
 
 namespace Dispatcher;
-internal class Program
+public class Program
 {
     public static string WorkFolder = "C:\\Users\\memes\\Desktop\\homework\\rgu\\Diplom\\TestFolders\\Dispatcher\\Work";
     public static string DispatcherFolder = "Dispatcher";
-    private static void Main(string[] args)
+    public static void Main(string[] args)
     {
         var output = "C:\\Users\\memes\\Desktop\\homework\\rgu\\Diplom\\TestFolders\\Dispatcher\\Out";
         var input = "C:\\Users\\memes\\Desktop\\homework\\rgu\\Diplom\\TestFolders\\Dispatcher\\In";
@@ -18,6 +18,9 @@ internal class Program
         ProcessInput(input);
         ProcessOutput(output);
     }
+    /// <summary>
+    /// Метод обработки папки входящих сообщений диспетчера
+    /// </summary>
     public static void ProcessInput(string input)
     {
         var packs = Directory.GetDirectories(input);
@@ -69,13 +72,25 @@ internal class Program
         }
     }
 
+    /// <summary>
+    /// Метод переноса папки из одной директории в другую
+    /// </summary>
+    /// <param name="source">Путь папки источника</param>
+    /// <param name="destination">Путь папки назначения</param>
     public static void MoveToDirectory(string source, string destination)
     {
         destination = Path.Combine(destination, Guid.NewGuid().ToString());
         if (!Directory.Exists(destination))
             Directory.Move(source, destination);
     }
-    private static void ProcessWarning(FormData data, MessageDirection direction, string folder, string comment)
+    /// <summary>
+    /// Обработка создания записи с результатом "внимание"
+    /// </summary>
+    /// <param name="data">Класс данных соответствующий паспорту</param>
+    /// <param name="direction">Направление сообщения</param>
+    /// <param name="folder">Локальный путь до папки</param>
+    /// <param name="comment">Комментарий</param>
+    public static void ProcessWarning(FormData data, MessageDirection direction, string folder, string comment)
     {
         using var context = new MyDbContext();
         var record = new JournalModel
@@ -93,8 +108,14 @@ internal class Program
         context.Journals.Add(record);
         context.SaveChanges();
     }
-
-    private static void ProcessSuccess(FormData data, MessageDirection direction, string folder, string comment)
+    /// <summary>
+    /// Обработка создания записи с результатом успех
+    /// </summary>
+    /// <param name="data">Класс данных соответствующий паспорту</param>
+    /// <param name="direction">Направление сообщения</param>
+    /// <param name="folder">Локальный путь до папки</param>
+    /// <param name="comment">Комментарий</param>
+    public static void ProcessSuccess(FormData data, MessageDirection direction, string folder, string comment)
     {
         using var context = new MyDbContext();
         var record = new JournalModel
@@ -112,8 +133,12 @@ internal class Program
         context.Journals.Add(record);
         context.SaveChanges();
     }
-
-    private static string? FindClientFolder(FormData data)
+    /// <summary>
+    /// Поиск локальной папки для получателя в базе данных
+    /// </summary>
+    /// <param name="data">Класс данных, соответсвующий паспорту</param>
+    /// <returns></returns>
+    public static string? FindClientFolder(FormData data)
     {
         using var context = new MyDbContext();
         var client = context.Clients.FirstOrDefault(c => c.OrgName == data.RecipientOrganization);
@@ -122,8 +147,13 @@ internal class Program
 
         return client.Folder;
     }
-
-    private static void ProcessError(MessageDirection direction, string folder, string comment)
+    /// <summary>
+    /// Обработка создания записи в журнале с результатом ошибка
+    /// </summary>
+    /// <param name="direction">Направление канала сообщения</param>
+    /// <param name="folder">Локальный путь до папки</param>
+    /// <param name="comment">Комментарий</param>
+    public static void ProcessError(MessageDirection direction, string folder, string comment)
     {
         using var context = new MyDbContext();
         var record = new JournalModel
@@ -136,7 +166,10 @@ internal class Program
         context.Journals.Add(record);
         context.SaveChanges();
     }
-
+    /// <summary>
+    /// Обработка канала исходящих сообщений, проверка исходящих папок зарегистрированных клиентов на наличие сообщений
+    /// </summary>
+    /// <param name="output">Путь до общей исходящей папки</param>
     public static void ProcessOutput(string output)
     {
         List<string> outputFolders;

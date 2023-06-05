@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Dispatcher
 {
-    internal class MyDbContext : DbContext
+    public class MyDbContext : DbContext
     {
         public DbSet<ClientModel> Clients { get; set; }
         public DbSet<JournalModel> Journals { get; set; }

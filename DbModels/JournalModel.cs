@@ -2,7 +2,7 @@
 
 namespace Dispatcher.DbModels
 {
-    internal class JournalModel
+    public class JournalModel
     {
         [Key]
         public int Id { get; set; }

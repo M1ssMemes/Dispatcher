@@ -2,7 +2,7 @@
 
 namespace Dispatcher.DbModels
 {
-    internal class ClientModel
+    public class ClientModel
     {
         [Key]
         public int Id { get; set; }
